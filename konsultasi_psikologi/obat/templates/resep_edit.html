@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Edit Resep #{{ r.pk }}</h3>
+<p><strong>Pasien:</strong> {{ r.pasien.nama }}</p>
+<p><strong>Konselor:</strong> {{ r.konselor }}</p>
+<hr>
+<h5>Tambah Item</h5>
+<form method="post">
+  {% csrf_token %}
+  {{ item_form.as_p }}
+  <button name="add_item" class="btn btn-sm btn-primary">Tambah Item</button>
+</form>
+
+<hr>
+<h5>Item pada resep</h5>
+<table class="table table-bordered">
+  <thead><tr><th>Nama</th><th>Dosis</th><th>Jumlah</th><th>Harga Satuan</th><th>Subtotal</th><th>Aksi</th></tr></thead>
+  <tbody>
+    {% for it in items %}
+    <tr>
+      <td>{{ it.nama_obat }}</td>
+      <td>{{ it.dosis }}</td>
+      <td>{{ it.jumlah }}</td>
+      <td>{{ it.harga_satuan }}</td>
+      <td>{{ it.subtotal|floatformat:2 }}</td>
+      <td>
+        <a class="btn btn-sm btn-danger" href="{% url 'resep_item_delete' it.pk %}">Hapus</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">Belum ada item.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<a class="btn btn-outline-secondary" href="{% url 'resep_list' %}">Kembali</a>
+<a class="btn btn-success" href="{% url 'order_from_resep' r.pk %}">Buat Order dari Resep</a>
+{% endblock %}

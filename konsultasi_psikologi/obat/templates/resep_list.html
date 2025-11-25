@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block page_title %}Daftar Resep{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3>Daftar Resep</h3>
+  <a class="btn btn-primary" href="{% url 'resep_add' %}">Buat Resep</a>
+</div>
+
+<table class="table table-striped">
+  <thead>
+    <tr><th>#</th><th>Pasien</th><th>Konselor</th><th>Tanggal</th><th>Aksi</th></tr>
+  </thead>
+  <tbody>
+    {% for r in resep_qs %}
+    <tr>
+      <td>{{ r.pk }}</td>
+      <td>{{ r.pasien.nama }}</td>
+      <td>{{ r.konselor }}</td>
+      <td>{{ r.tanggal }}</td>
+      <td>
+        <a class="btn btn-sm btn-outline-primary" href="{% url 'resep_edit' r.pk %}">Edit / Items</a>
+        <a class="btn btn-sm btn-outline-success" href="{% url 'order_from_resep' r.pk %}">Buat Order</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">Belum ada resep.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -29,3 +29,6 @@ urlpatterns = [
 
 
 ]
+# konsultasi_psikologi/urls.py (atau urls project)
+path('', include('obat.urls')),
+

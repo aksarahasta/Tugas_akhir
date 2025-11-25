@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Detail Order #{{ order.pk }}</h3>
+<p><strong>Pasien:</strong> {{ order.pasien.nama }}</p>
+<p><strong>Tanggal:</strong> {{ order.tanggal_order }}</p>
+<p><strong>Status:</strong> {{ order.status }}</p>
+<p><strong>Total Obat:</strong> {{ order.total_obat|floatformat:2 }}</p>
+<p><strong>Biaya Kurir:</strong> {{ order.biaya_kurir|floatformat:2 }}</p>
+<p><strong>Total:</strong> {{ order.total|floatformat:2 }}</p>
+
+<hr>
+<h5>Item</h5>
+<table class="table">
+  <thead><tr><th>Nama</th><th>Jumlah</th><th>Harga</th><th>Subtotal</th></tr></thead>
+  <tbody>
+    {% for it in order.resep.items.all %}
+    <tr>
+      <td>{{ it.nama_obat }}</td>
+      <td>{{ it.jumlah }}</td>
+      <td>{{ it.harga_satuan }}</td>
+      <td>{{ it.subtotal|floatformat:2 }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<hr>
+<form method="post">
+  {% csrf_token %}
+  <div class="mb-3">
+    <label>Status</label>
+    <select name="status" class="form-select">
+      <option value="diproses">Diproses</option>
+      <option value="dikirim">Dikirim</option>
+      <option value="selesai">Selesai</option>
+      <option value="batal">Batal</option>
+    </select>
+  </div>
+  <button name="set_status" class="btn btn-primary">Ubah Status</button>
+  <a class="btn btn-outline-secondary" href="{% url 'order_list' %}">Kembali</a>
+</form>
+{% endblock %}
