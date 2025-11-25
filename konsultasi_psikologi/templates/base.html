@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}SmartMentalCare{% endblock %}</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    :root{
+      --sidebar-width:250px;
+      --sidebar-bg:#111827;
+      --sidebar-text:#e6eef8;
+      --accent:#0d6efd;
+    }
+    body { background:#f4f6f9; }
+    .app-container { display:flex; min-height:100vh; }
+    .sidebar {
+      width:var(--sidebar-width);
+      background:var(--sidebar-bg);
+      color:var(--sidebar-text);
+      flex-shrink:0;
+      padding:18px 0;
+      position:fixed;
+      top:0; left:0; bottom:0;
+      overflow:auto;
+    }
+    .brand {
+      padding:0 20px 12px 20px;
+      font-weight:600;
+      font-size:18px;
+      color:var(--sidebar-text);
+    }
+    .nav-section { margin-top:12px; }
+    .nav-section .section-title {
+      font-size:12px;
+      color:#9aa6b2;
+      padding:8px 20px;
+      text-transform:uppercase;
+    }
+    .nav-link-custom {
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 20px;
+      color:var(--sidebar-text);
+      text-decoration:none;
+    }
+    .nav-link-custom:hover { background:rgba(255,255,255,0.03); color:#fff; }
+    .nav-link-custom.active {
+      background: linear-gradient(90deg, rgba(13,110,253,0.12), rgba(13,110,253,0.06));
+      color:#fff;
+      border-left:3px solid var(--accent);
+    }
+    .submenu { padding-left:16px; }
+    .content-wrap { margin-left:var(--sidebar-width); flex:1; padding:24px; }
+    .topbar {
+      height:64px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:0 12px;
+      background:#fff;
+      border-bottom:1px solid #e6eef8;
+      margin-bottom:18px;
+    }
+    .user-box { display:flex; align-items:center; gap:10px; }
+    .small-muted { color:#6c757d; font-size:13px; }
+    @media (max-width:991px){
+      .sidebar { position:fixed; transform:translateX(-110%); transition:transform .18s ease; z-index:1050; }
+      .sidebar.open { transform:translateX(0); }
+      .content-wrap { margin-left:0; padding:12px; }
+    }
+  </style>
+
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<div class="app-container">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand px-3">
+      SmartMentalCare
+    </div>
+
+    <div class="nav-section">
+      <a class="nav-link-custom {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+        <span class="bi bi-house"></span> Dashboard
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="section-title">Pasien</div>
+      <div>
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'pasien_list' %}active{% endif %}" href="{% url 'pasien_list' %}">Data Pasien</a>
+        <a class="nav-link-custom {% if request.resolver_match.url_name in ('kuesioner_isi','kuesioner_list') %}active{% endif %}" href="{% url 'kuesioner_isi' %}">Kuisioner</a>
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'jadwal_pasien' %}active{% endif %}" href="{% url 'jadwal_pasien' %}">Jadwal Konsultasi</a>
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'pasien_riwayat' %}active{% endif %}" href="{% url 'pasien_riwayat' %}">Riwayat</a>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="section-title">Konsultasi</div>
+      <div>
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'konselor_list' %}active{% endif %}" href="{% url 'konselor_list' %}">Data Konselor</a>
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'jadwal_list' %}active{% endif %}" href="{% url 'jadwal_list' %}">Jadwal</a>
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'booking_list' %}active{% endif %}" href="{% url 'booking_list' %}">Booking / Sesi</a>
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'pembayaran_list' %}active{% endif %}" href="{% url 'pembayaran_list' %}">Pembayaran</a>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="section-title">Obat & Resep</div>
+      <div>
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'resep_list' %}active{% endif %}" href="{% url 'resep_list' %}">Resep / Obat</a>
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'terapi_list' %}active{% endif %}" href="{% url 'terapi_list' %}">Terapi</a>
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'order_list' %}active{% endif %}" href="{% url 'order_list' %}">Pengiriman / Order</a>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="section-title">Logistik</div>
+      <div>
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'inventori_list' %}active{% endif %}" href="{% url 'inventori_list' %}">Inventori</a>
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'inventori_obat' %}active{% endif %}" href="{% url 'inventori_obat' %}">— Obat</a>
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'inventori_perlengkapan' %}active{% endif %}" href="{% url 'inventori_perlengkapan' %}">— Perlengkapan</a>
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'cabang_list' %}active{% endif %}" href="{% url 'cabang_list' %}">Cabang</a>
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'supplier_list' %}active{% endif %}" href="{% url 'supplier_list' %}">Supplier</a>
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'barang_masuk' %}active{% endif %}" href="{% url 'barang_masuk' %}">Barang Masuk</a>
+      </div>
+    </div>
+
+    <div class="nav-section mt-3">
+      <div class="section-title">Akun</div>
+      <div>
+        {% if request.user.is_authenticated %}
+          <div class="px-3 small-muted mb-1">Masuk sebagai</div>
+          <div class="px-3 mb-2"><strong>{{ request.user.username }}</strong></div>
+
+          <form method="post" action="{% url 'logout' %}" class="px-3">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-light btn-sm w-100">Logout</button>
+          </form>
+        {% else %}
+          <a class="nav-link-custom" href="{% url 'login' %}">Login</a>
+          <a class="nav-link-custom" href="{% url 'register' %}">Register</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div style="height:32px"></div>
+  </aside>
+
+  <!-- CONTENT -->
+  <div class="content-wrap">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="btn btn-light d-lg-none" id="btnToggle"><span class="bi bi-list"></span></button>
+        <h5 class="m-0">{% block page_title %}Dashboard{% endblock %}</h5>
+      </div>
+
+      <div class="user-box">
+        {% if request.user.is_authenticated %}
+          <div class="small-muted">Halo,</div>
+          <div><strong>{{ request.user.username }}</strong></div>
+        {% endif %}
+      </div>
+    </header>
+
+    <main>
+      {% if messages %}
+        <div>
+          {% for m in messages %}
+            <div class="alert alert-{{ m.tags }} alert-dismissible fade show" role="alert">
+              {{ m }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="mt-4 small text-muted">
+      <div>© {{ now.year }} SmartMentalCare</div>
+    </footer>
+  </div>
+
+</div>
+
+<!-- Bootstrap & small script -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // toggle sidebar on mobile
+  const btn = document.getElementById('btnToggle');
+  const sidebar = document.getElementById('sidebar');
+  if(btn && sidebar){
+    btn.addEventListener('click', ()=> sidebar.classList.toggle('open'));
+  }
+
+  // auto-close sidebar when link clicked (mobile)
+  document.querySelectorAll('#sidebar a.nav-link-custom').forEach(a=>{
+    a.addEventListener('click', ()=> {
+      if(window.innerWidth < 992) sidebar.classList.remove('open');
+    });
+  });
+</script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>
