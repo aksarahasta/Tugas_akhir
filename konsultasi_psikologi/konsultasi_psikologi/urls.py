@@ -20,3 +20,6 @@ from django.urls import path
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
+# konsultasi_psikologi/urls.py (atau urls project)
+path('', include('obat.urls')),
+
