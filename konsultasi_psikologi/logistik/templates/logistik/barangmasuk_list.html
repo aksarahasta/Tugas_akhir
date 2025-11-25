@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h3>Barang Masuk</h3>
+
+<a href="{% url 'barangmasuk_tambah' %}" class="btn btn-primary mb-3">Tambah Barang Masuk</a>
+
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Nama Barang</th>
+      <th>Jumlah</th>
+      <th>Tanggal</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for b in barang_masuk %}
+    <tr>
+      <td>{{ b.inventori.nama }}</td>
+      <td>{{ b.jumlah }}</td>
+      <td>{{ b.tanggal }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

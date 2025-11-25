@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h3>Cabang</h3>
+
+<a href="{% url 'cabang_tambah' %}" class="btn btn-primary mb-3">Tambah Cabang</a>
+
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Nama</th>
+      <th>Alamat</th>
+      <th>Kontak</th>
+      <th>Manager</th>
+      <th>Aksi</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for c in cabang %}
+    <tr>
+      <td>{{ c.nama_cabang }}</td>
+      <td>{{ c.alamat }}</td>
+      <td>{{ c.kontak }}</td>
+      <td>{{ c.manager }}</td>
+      <td>
+        <a href="{% url 'cabang_edit' c.id %}" class="btn btn-warning btn-sm">Edit</a>
+        <a href="{% url 'cabang_hapus' c.id %}" class="btn btn-danger btn-sm">Hapus</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

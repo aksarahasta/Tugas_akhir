@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h3>Inventori</h3>
+
+<a href="{% url 'inventori_tambah' %}" class="btn btn-primary mb-3">Tambah Barang</a>
+
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Nama</th>
+      <th>Kategori</th>
+      <th>Stok</th>
+      <th>Harga</th>
+      <th>Aksi</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in inventori %}
+    <tr>
+      <td>{{ item.nama }}</td>
+      <td>{{ item.kategori }}</td>
+      <td>{{ item.stok }}</td>
+      <td>{{ item.harga }}</td>
+      <td>
+        <a href="{% url 'inventori_edit' item.id %}" class="btn btn-warning btn-sm">Edit</a>
+        <a href="{% url 'inventori_hapus' item.id %}" class="btn btn-danger btn-sm">Hapus</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

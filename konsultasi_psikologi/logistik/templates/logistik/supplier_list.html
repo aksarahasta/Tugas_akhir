@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<h4>Supplier</h4>
+<a href="{% url 'supplier_tambah' %}" class="btn btn-primary mb-3">Tambah Supplier</a>
+<table class="table table-sm table-bordered">
+  <thead><tr><th>Nama</th><th>Kategori</th><th>Kontak</th><th>Aksi</th></tr></thead>
+  <tbody>
+    {% for s in suppliers %}
+    <tr>
+      <td>{{ s.nama_supplier }}</td>
+      <td>{{ s.get_kategori_display }}</td>
+      <td>{{ s.kontak }}</td>
+      <td>
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'supplier_edit' s.pk %}">Edit</a>
+        <a class="btn btn-sm btn-outline-danger" href="{% url 'supplier_hapus' s.pk %}">Hapus</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">Belum ada supplier.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

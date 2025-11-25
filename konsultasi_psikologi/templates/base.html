@@ -94,44 +94,15 @@
       </a>
     </div>
 
-    <div class="nav-section">
-      <div class="section-title">Pasien</div>
-      <div>
-        <a class="nav-link-custom {% if request.resolver_match.url_name == 'pasien_list' %}active{% endif %}" href="{% url 'pasien_list' %}">Data Pasien</a>
-        <a class="nav-link-custom {% if request.resolver_match.url_name in ('kuesioner_isi','kuesioner_list') %}active{% endif %}" href="{% url 'kuesioner_isi' %}">Kuisioner</a>
-        <a class="nav-link-custom {% if request.resolver_match.url_name == 'jadwal_pasien' %}active{% endif %}" href="{% url 'jadwal_pasien' %}">Jadwal Konsultasi</a>
-        <a class="nav-link-custom {% if request.resolver_match.url_name == 'pasien_riwayat' %}active{% endif %}" href="{% url 'pasien_riwayat' %}">Riwayat</a>
-      </div>
-    </div>
-
-    <div class="nav-section">
-      <div class="section-title">Konsultasi</div>
-      <div>
-        <a class="nav-link-custom {% if request.resolver_match.url_name == 'konselor_list' %}active{% endif %}" href="{% url 'konselor_list' %}">Data Konselor</a>
-        <a class="nav-link-custom {% if request.resolver_match.url_name == 'jadwal_list' %}active{% endif %}" href="{% url 'jadwal_list' %}">Jadwal</a>
-        <a class="nav-link-custom {% if request.resolver_match.url_name == 'booking_list' %}active{% endif %}" href="{% url 'booking_list' %}">Booking / Sesi</a>
-        <a class="nav-link-custom {% if request.resolver_match.url_name == 'pembayaran_list' %}active{% endif %}" href="{% url 'pembayaran_list' %}">Pembayaran</a>
-      </div>
-    </div>
-
-    <div class="nav-section">
-      <div class="section-title">Obat & Resep</div>
-      <div>
-        <a class="nav-link-custom {% if request.resolver_match.url_name == 'resep_list' %}active{% endif %}" href="{% url 'resep_list' %}">Resep / Obat</a>
-        <a class="nav-link-custom {% if request.resolver_match.url_name == 'terapi_list' %}active{% endif %}" href="{% url 'terapi_list' %}">Terapi</a>
-        <a class="nav-link-custom {% if request.resolver_match.url_name == 'order_list' %}active{% endif %}" href="{% url 'order_list' %}">Pengiriman / Order</a>
-      </div>
-    </div>
+    
 
     <div class="nav-section">
       <div class="section-title">Logistik</div>
       <div>
         <a class="nav-link-custom {% if request.resolver_match.url_name == 'inventori_list' %}active{% endif %}" href="{% url 'inventori_list' %}">Inventori</a>
-        <a class="nav-link-custom {% if request.resolver_match.url_name == 'inventori_obat' %}active{% endif %}" href="{% url 'inventori_obat' %}">— Obat</a>
-        <a class="nav-link-custom {% if request.resolver_match.url_name == 'inventori_perlengkapan' %}active{% endif %}" href="{% url 'inventori_perlengkapan' %}">— Perlengkapan</a>
         <a class="nav-link-custom {% if request.resolver_match.url_name == 'cabang_list' %}active{% endif %}" href="{% url 'cabang_list' %}">Cabang</a>
         <a class="nav-link-custom {% if request.resolver_match.url_name == 'supplier_list' %}active{% endif %}" href="{% url 'supplier_list' %}">Supplier</a>
-        <a class="nav-link-custom {% if request.resolver_match.url_name == 'barang_masuk' %}active{% endif %}" href="{% url 'barang_masuk' %}">Barang Masuk</a>
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'barangmasuk_list' %}active{% endif %}" href="{% url 'barangmasuk_list' %}">Barang Masuk</a>
       </div>
     </div>
 
@@ -142,13 +113,13 @@
           <div class="px-3 small-muted mb-1">Masuk sebagai</div>
           <div class="px-3 mb-2"><strong>{{ request.user.username }}</strong></div>
 
-          <form method="post" action="{% url 'logout' %}" class="px-3">
+          <form method="post" action="#" class="px-3">
             {% csrf_token %}
             <button type="submit" class="btn btn-outline-light btn-sm w-100">Logout</button>
           </form>
         {% else %}
-          <a class="nav-link-custom" href="{% url 'login' %}">Login</a>
-          <a class="nav-link-custom" href="{% url 'register' %}">Register</a>
+          <a class="nav-link-custom" href="#">Login</a>
+          <a class="nav-link-custom" href="#">Register</a>
         {% endif %}
       </div>
     </div>
