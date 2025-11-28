@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Data Konselor</h2>
+    <a href="{% url 'konselor_add' %}" class="btn btn-primary">+ Tambah Konselor</a>
+</div>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Nama</th>
+            <th>Keahlian</th>
+            <th>No. HP</th>
+            <th>Tarif Konselor</th>
+            <th>Tarif Per Sesi</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for k in konselors %}
+        <tr>
+            <td>{{ k.nama }}</td>
+            <td>{{ k.spesialisasi }}</td>
+            <td>{{ k.no_hp }}</td>
+            <td>{{ k.tarif_dasar }}</td>
+            <td>{{ k.tarif_sesi }}</td>
+            <td>
+                <a href="{% url 'konselor_edit' k.id %}" class="btn btn-warning btn-sm">Edit</a>
+                <a href="{% url 'konselor_delete' k.id %}" class="btn btn-danger btn-sm"
+                   onclick="return confirm('Hapus konselor ini?')">Hapus</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6" class="text-center">Belum ada konselor.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+
+  <!-- Header Resep -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">Edit Resep #{{ r.pk }}</h4>
+    </div>
+    <div class="card-body">
+      <p class="mb-1"><strong>Pasien:</strong> {{ r.pasien.nama }}</p>
+      <p class="mb-0"><strong>Konselor:</strong> {{ r.konselor }}</p>
+    </div>
+  </div>
+
+  <!-- Tambah Item -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-info text-white fw-bold">
+      Tambah Item Obat
+    </div>
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          {{ item_form.as_p }}
+        </div>
+
+        <button name="add_item" class="btn btn-primary">
+          + Tambah Item
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Daftar Item -->
+  <div class="card shadow-sm">
+    <div class="card-header bg-dark text-white fw-bold">
+      Daftar Item pada Resep
+    </div>
+
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>Nama Obat</th>
+              <th>Dosis</th>
+              <th>Jumlah</th>
+              <th>Harga Satuan</th>
+              <th>Subtotal</th>
+              <th style="width: 80px;">Aksi</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for it in items %}
+            <tr>
+              <td>{{ it.nama_obat }}</td>
+              <td>{{ it.dosis }}</td>
+              <td>{{ it.jumlah }}</td>
+              <td>{{ it.harga_satuan }}</td>
+              <td>{{ it.subtotal|floatformat:2 }}</td>
+              <td>
+                <a class="btn btn-sm btn-danger"
+                   href="{% url 'resep_item_delete' it.pk %}">
+                  Hapus
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="6" class="text-center py-3">
+                Belum ada item pada resep ini.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tombol Navigasi -->
+  <div class="mt-4">
+    <a class="btn btn-outline-secondary" href="{% url 'resep_list' %}">
+      Kembali
+    </a>
+
+    <a class="btn btn-success" href="{% url 'order_from_resep' r.pk %}">
+      Buat Order dari Resep
+    </a>
+  </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h3>Dashboard</h3>
+{% if pasien_profile %}
+  <div class="card p-3 mb-3">
+    <h5>Halo, {{ pasien_profile.nama }}</h5>
+    <p>Umur: {{ pasien_profile.umur }} — Tingkat gangguan: <strong>{{ pasien_profile.get_tingkat_gangguan_display }}</strong></p>
+    <a class="btn btn-sm btn-outline-primary" href="{% url 'kuesioner_isi' %}">Isi / ulang Kuesioner</a>
+    <a class="btn btn-sm btn-outline-secondary" href="{% url 'kuesioner_list' %}">Riwayat Kuesioner</a>
+    <a class="btn btn-sm btn-outline-success" href="{% url 'booking_create' %}">Booking Konsultasi</a>
+  </div>
+  <h5>Booking terakhir</h5>
+  <ul>
+    {% for b in bookings %}
+      <li>{{ b.tanggal }} {{ b.jam_mulai }} — status: {{ b.status }}</li>
+    {% empty %}
+      <li>Belum ada booking</li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>Profil pasien tidak ditemukan.</p>
+{% endif %}
+{% endblock %}

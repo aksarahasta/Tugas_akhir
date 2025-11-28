@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+
+  <!-- Judul -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="fw-bold">Buat Order - Resep #{{ resep.pk }}</h3>
+    <a href="{% url 'resep_edit' resep.pk %}" class="btn btn-secondary btn-sm">Kembali</a>
+  </div>
+
+  <!-- Info Pasien -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <p class="mb-0"><strong>Pasien:</strong> {{ resep.pasien.nama }}</p>
+    </div>
+  </div>
+
+  <!-- Form Order -->
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white fw-bold">
+      Form Pembuatan Order
+    </div>
+    <div class="card-body">
+
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          {{ form.as_p }}
+        </div>
+
+        <button class="btn btn-primary">Buat Order</button>
+        <a href="{% url 'resep_edit' resep.pk %}" class="btn btn-outline-secondary">Batal</a>
+
+      </form>
+
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

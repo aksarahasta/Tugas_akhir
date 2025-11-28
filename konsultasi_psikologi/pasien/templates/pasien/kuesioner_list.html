@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Riwayat Kuesioner{% endblock %}
+{% block content %}
+<h3>Riwayat Kuesioner</h3>
+<table class="table table-striped">
+  <thead><tr><th>Tanggal</th><th>Skor</th><th>Hasil</th></tr></thead>
+  <tbody>
+    {% for k in data %}
+      <tr><td>{{ k.tanggal }}</td><td>{{ k.skor_total }}</td><td>{{ k.hasil }}</td></tr>
+    {% empty %}
+      <tr><td colspan="3">Belum ada kuesioner.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

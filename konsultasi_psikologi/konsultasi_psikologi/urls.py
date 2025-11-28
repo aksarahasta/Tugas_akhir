@@ -20,15 +20,29 @@ from django.urls import path, include
 from views import dashboard
 
 
+from django.contrib import admin
+from django.urls import path, include
+# Pastikan kamu mengimport view login dan dashboard dari pasien.views
+from pasien.views import login_view, dashboard 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', dashboard, name='dashboard'), 
 
-    path('', include('logistik.urls')),
- 
+    # --- PERBAIKAN DI SINI ---
+    # 1. Root URL ('') sekarang mengarah ke Login
+    path('', login_view, name='login_root'), 
 
+    # 2. Dashboard kita beri alamat khusus (misal: /dashboard/)
+    #    Ini penting supaya setelah login, user dilempar ke sini
+    path('dashboard/', dashboard, name='dashboard'),
 
+    # --- INCLUDE SUBSISTEM ---
+    path('logistik/', include('logistik.urls')),
+    path('pasien/', include('pasien.urls')),
+    path('obat/', include('obat.urls')),
+    
+    # ⚠️ JANGAN LUPA: Masukkan juga url konsultasi agar tidak error 404
+    path('konsultasi/', include('konsultasi.urls')), 
 ]
-# konsultasi_psikologi/urls.py (atau urls project)
-path('', include('obat.urls')),
+
 

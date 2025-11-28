@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Jadwal Konsultasi Saya{% endblock %}
+{% block page_title %}Jadwal Konsultasi Saya{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Tanggal Order</th>
+            <th>Konselor</th>
+            <th>Jadwal</th>
+            <th>Biaya</th>
+            <th>Status</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in bookings %}
+            <tr>
+              <td>{{ b.tanggal_sesi|date:"d M Y" }}</td>
+              <td>{{ b.konselor.nama }}</td>
+              <td>
+                {% if b.jadwal %}
+                   {{ b.jadwal.hari }}, {{ b.jadwal.jam_mulai|time:"H:i" }}
+                {% else %}
+                   <span class="text-muted">-</span>
+                {% endif %}
+              </td>
+              <td>Rp {{ b.total_biaya|floatformat:0 }}</td>
+              <td>
+                {% if b.is_paid %}
+                  <span class="badge bg-success">Lunas</span>
+                  <span class="badge bg-primary">{{ b.get_status_display }}</span>
+                {% else %}
+                  <span class="badge bg-warning text-dark">Belum Bayar</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if not b.is_paid %}
+                  <a href="{% url 'booking_pay' b.id %}" class="btn btn-sm btn-primary">Bayar Sekarang</a>
+                {% else %}
+                  <button class="btn btn-sm btn-secondary" disabled>Sudah Lunas</button>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" class="text-center py-4 text-muted">Belum ada jadwal konsultasi.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

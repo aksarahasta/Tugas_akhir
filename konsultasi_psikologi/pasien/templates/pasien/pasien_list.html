@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Daftar Pasien{% endblock %}
+{% block content %}
+<h3>Daftar Pasien</h3>
+<table class="table table-bordered">
+  <thead><tr><th>Nama</th><th>Username</th><th>Kontak</th><th>Aksi</th></tr></thead>
+  <tbody>
+    {% for p in data %}
+      <tr>
+        <td>{{ p.nama }}</td>
+        <td>{{ p.user.username }}</td>
+        <td>{{ p.kontak }}</td>
+        <td><a class="btn btn-sm btn-primary" href="{% url 'pasien_detail' p.pk %}">Detail</a></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

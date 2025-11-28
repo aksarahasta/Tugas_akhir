@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<h2>Login</h2>
+{% if messages %}
+  {% for m in messages %}<div class="alert alert-{{ m.tags }}">{{ m }}</div>{% endfor %}
+{% endif %}
+<form method="post">
+  {% csrf_token %}
+  <div class="mb-3">
+    <label>Username</label>
+    <input class="form-control" name="username">
+  </div>
+  <div class="mb-3">
+    <label>Password</label>
+    <input type="password" class="form-control" name="password">
+  </div>
+  <button class="btn btn-primary">Login</button>
+</form>
+<p class="mt-2">Belum punya akun? <a href="{% url 'register' %}">Daftar</a></p>
+{% endblock %}

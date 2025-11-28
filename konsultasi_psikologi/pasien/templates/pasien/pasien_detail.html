@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Detail Pasien{% endblock %}
+{% block content %}
+<h3>Detail: {{ p.nama }}</h3>
+<p>Username: {{ p.user.username }}</p>
+<p>Kontak: {{ p.kontak }}</p>
+<p>Alamat: {{ p.alamat }}</p>
+<p>Tingkat gangguan: {{ p.tingkat_gangguan }}</p>
+
+<h5>Riwayat Konsultasi</h5>
+<ul>
+  {% for r in riwayat %}
+    <li>{{ r.tanggal }} - {{ r.konselor_nama }} - {{ r.ringkasan|truncatechars:80 }}</li>
+  {% empty %}<li>Belum ada riwayat</li>{% endfor %}
+</ul>
+
+<h5>Riwayat Kuesioner</h5>
+<ul>
+  {% for k in kuesioner %}
+    <li>{{ k.tanggal }} - {{ k.skor_total }} - {{ k.hasil }}</li>
+  {% empty %}<li>Belum ada</li>{% endfor %}
+</ul>
+
+<a class="btn btn-sm btn-secondary" href="{% url 'pasien_edit' p.pk %}">Edit</a>
+{% endblock %}

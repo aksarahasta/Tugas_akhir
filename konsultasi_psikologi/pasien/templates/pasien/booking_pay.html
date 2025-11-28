@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Pembayaran{% endblock %}
+{% block page_title %}Konfirmasi Pembayaran{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow">
+      <div class="card-header bg-primary text-white">
+        <h5 class="m-0">Tagihan Konsultasi</h5>
+      </div>
+      <div class="card-body">
+        <div class="text-center mb-4">
+          <p class="text-muted mb-1">Total yang harus dibayar:</p>
+          <h2 class="font-weight-bold text-success">Rp {{ booking.total_biaya|floatformat:0 }}</h2>
+        </div>
+
+        <ul class="list-group mb-4">
+          <li class="list-group-item d-flex justify-content-between">
+            <span>Konselor:</span>
+            <strong>{{ booking.konselor.nama }}</strong>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span>Jadwal:</span>
+            <strong>{{ booking.jadwal.hari }} ({{ booking.jadwal.jam_mulai }})</strong>
+          </li>
+        </ul>
+
+        <form method="post">
+          {% csrf_token %}
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-success btn-lg">Konfirmasi & Bayar</button>
+            <a href="{% url 'booking_list' %}" class="btn btn-outline-secondary">Batal</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block page_title %}Daftar Resep{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="fw-bold">Daftar Resep</h3>
+    <a class="btn btn-primary" href="{% url 'resep_add' %}">
+      + Buat Resep
+    </a>
+  </div>
+
+  <!-- Tabel -->
+  <div class="card shadow-sm">
+    <div class="card-body p-0">
+
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>#</th>
+              <th>Pasien</th>
+              <th>Konselor</th>
+              <th>Tanggal</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for r in resep_qs %}
+            <tr>
+              <td>{{ r.pk }}</td>
+              <td>{{ r.pasien.nama }}</td>
+              <td>{{ r.konselor }}</td>
+              <td>{{ r.tanggal }}</td>
+
+              <td>
+                <a class="btn btn-sm btn-outline-primary me-1"
+                   href="{% url 'resep_edit' r.pk %}">
+                  Edit / Items
+                </a>
+                <a class="btn btn-sm btn-outline-success"
+                   href="{% url 'order_from_resep' r.pk %}">
+                  Buat Order
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5" class="text-center py-3">
+                Belum ada resep.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

@@ -93,7 +93,39 @@
         <span class="bi bi-house"></span> Dashboard
       </a>
     </div>
+    
+    <div class="nav-section">
+      <div class="section-title">Pasien</div>
+      <div>
+        <!-- Link Data Pasien -->
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'pasien_list' %}active{% endif %}" href="{% url 'pasien_list' %}">Data Pasien</a>
+        
+        <!-- Link Kuisioner (INI YANG DIPERBAIKI: Gunakan OR, bukan IN) -->
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'kuesioner_isi' or request.resolver_match.url_name == 'kuesioner_list' %}active{% endif %}" href="{% url 'kuesioner_list' %}">Kuisioner</a>
+        
+        <!-- Link Jadwal Pasien (Booking Create) -->
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'booking_create' %}active{% endif %}" href="{% url 'booking_create' %}">Pendaftaran</a>
+         <a class="nav-link-custom {% if request.resolver_match.url_name == 'booking_list' %}active{% endif %}" href="{% url 'booking_list' %}">Riwayat Pendaftaran</a>
+      </div>
+    </div>
 
+    <div class="nav-section">
+      <div class="section-title">Konsultasi</div>
+      <div>
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'konselor_list' %}active{% endif %}" href="{% url 'konselor_list' %}">Data Konselor</a>
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'jadwal_list' %}active{% endif %}" href="{% url 'jadwal_list' %}">Jadwal</a>
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'sesi_list' %}active{% endif %}" href="{% url 'sesi_list' %}">Booking / Sesi</a>
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'pembayaran_list' %}active{% endif %}" href="{% url 'pembayaran_list' %}">Pembayaran</a>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="section-title">Obat & Resep</div>
+      <div>
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'resep_list' %}active{% endif %}" href="{% url 'resep_list' %}">Resep / Obat</a>
+        <a class="nav-link-custom {% if request.resolver_match.url_name == 'order_list' %}active{% endif %}" href="{% url 'order_list' %}">Pengiriman / Order</a>
+      </div>
+    </div>
     
 
     <div class="nav-section">
@@ -113,13 +145,13 @@
           <div class="px-3 small-muted mb-1">Masuk sebagai</div>
           <div class="px-3 mb-2"><strong>{{ request.user.username }}</strong></div>
 
-          <form method="post" action="#" class="px-3">
+          <form method="post" action="{% url 'logout' %}" class="px-3">
             {% csrf_token %}
             <button type="submit" class="btn btn-outline-light btn-sm w-100">Logout</button>
           </form>
         {% else %}
-          <a class="nav-link-custom" href="#">Login</a>
-          <a class="nav-link-custom" href="#">Register</a>
+          <a class="nav-link-custom" href="{% url 'login' %}">Login</a>
+          <a class="nav-link-custom" href="{% url 'register' %}">Register</a>
         {% endif %}
       </div>
     </div>
@@ -159,7 +191,7 @@
     </main>
 
     <footer class="mt-4 small text-muted">
-      <div>© {{ now.year }} SmartMentalCare</div>
+      <div>© 2024 SmartMentalCare</div>
     </footer>
   </div>
 

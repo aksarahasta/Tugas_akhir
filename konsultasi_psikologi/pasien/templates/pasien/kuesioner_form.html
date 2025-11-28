@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Isi Kuesioner{% endblock %}
+{% block content %}
+<h3>Isi Kuesioner Singkat (5 pertanyaan)</h3>
+<form method="post">
+  {% csrf_token %}
+  <p>Jawab tiap pertanyaan dengan angka 1 (paling sedikit) sampai 5 (paling banyak).</p>
+  <div class="mb-2"><label>1. Saya merasa cemas akhir-akhir ini.</label>{{ form.q1 }}</div>
+  <div class="mb-2"><label>2. Saya sulit tidur / sering terbangun.</label>{{ form.q2 }}</div>
+  <div class="mb-2"><label>3. Saya mudah kehilangan fokus atau konsentrasi.</label>{{ form.q3 }}</div>
+  <div class="mb-2"><label>4. Saya sering merasa sedih / kehilangan minat.</label>{{ form.q4 }}</div>
+  <div class="mb-2"><label>5. Saya kesulitan mengendalikan pikiran/emosi.</label>{{ form.q5 }}</div>
+  <button class="btn btn-primary mt-3">Simpan</button>
+</form>
+{% endblock %}

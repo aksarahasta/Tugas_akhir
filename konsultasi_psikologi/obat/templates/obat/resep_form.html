@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">{{ judul }}</h4>
+    </div>
+
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          {{ form.as_p }}
+        </div>
+
+        <button class="btn btn-success me-2">Simpan</button>
+        <a class="btn btn-outline-secondary" href="{% url 'resep_list' %}">
+          Batal
+        </a>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
