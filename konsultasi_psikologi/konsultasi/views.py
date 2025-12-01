@@ -2,9 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 # Import model yang SUDAH DIPERBAIKI namanya
 from .models import Konselor, JadwalKonselor, JadwalBooking, Pembayaran
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from .forms import KonselorForm, JadwalForm, SesiKonsultasiForm, PembayaranKonsultasiForm
-
+import json
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from django.db.models.functions import TruncDate    
 
 # =============================
 # CRUD KONSELOR
@@ -74,24 +77,81 @@ def sesi_list(request):
     data = JadwalBooking.objects.select_related('pasien', 'konselor', 'jadwal').all()
     return render(request, 'konsultasi/sesi_list.html', {'booking': data})
 
+def sesi_detail(request, pk):
+    # Ambil data sesi berdasarkan ID
+    sesi = get_object_or_404(JadwalBooking, pk=pk)
+    
+    context = {
+        'sesi': sesi,
+        'title': 'Detail Sesi Konsultasi'
+    }
+    return render(request, 'konsultasi/sesi_detail.html', context)
+
 def pembayaran_list(request):
     data = Pembayaran.objects.select_related('booking').all()
     return render(request, 'konsultasi/pembayaran_list.html', {'data': data})
 
 
+@login_required
 def daftar_pembayaran(request):
-    pembayaran_list = Pembayaran.objects.all().select_related('pasien', 'booking').order_by('-created_at')
-
-    # Perhatikan 'jumlah' harus sesuai dengan nama field di models.py Anda
-    agregat = pembayaran_list.filter(status='paid').aggregate(Sum('jumlah'))
-    total_sum = agregat['jumlah_sum']
+    # 1. Base Query (Ambil semua data pembayaran yang sudah lunas/paid)
+    # Kita filter status='paid' di awal agar perhitungan uang valid
+    qs = Pembayaran.objects.filter(status='paid').select_related('pasien', 'booking')
     
-    # Jika None (belum ada data), set jadi 0
-    total_pendapatan = total_sum if total_sum is not None else 0
+    # 2. Perhitungan Statistik Waktu
+    now = timezone.now()
+    
+    # Pendapatan Hari Ini
+    income_today = qs.filter(created_at__date=now.date()).aggregate(Sum('jumlah'))['jumlah__sum'] or 0
+    
+    # Pendapatan Bulan Ini
+    income_month = qs.filter(created_at__month=now.month, created_at__year=now.year).aggregate(Sum('jumlah'))['jumlah__sum'] or 0
+    
+    # Total Pendapatan Seumur Hidup
+    income_total = qs.aggregate(Sum('jumlah'))['jumlah__sum'] or 0
+
+    # 3. Data Grafik (7 Hari Terakhir)
+    # Mengelompokkan pendapatan berdasarkan tanggal
+    last_7_days = qs.filter(created_at__gte=now - timezone.timedelta(days=7)) \
+                    .annotate(date=TruncDate('created_at')) \
+                    .values('date') \
+                    .annotate(total=Sum('jumlah')) \
+                    .order_by('date')
+    
+    # Format data untuk dikirim ke Javascript (ApexCharts)
+    graph_dates = [item['date'].strftime('%d %b') for item in last_7_days]
+    graph_values = [int(item['total']) for item in last_7_days]
+
+    # 4. Rekap Per Konselor (Top 5)
+    # Asumsi: booking punya relasi ke konselor
+    counselor_stats = qs.values('booking__konselor__nama') \
+                        .annotate(total_pendapatan=Sum('jumlah'), jumlah_transaksi=Count('id')) \
+                        .order_by('-total_pendapatan')[:5]
+
+    # 5. List Tabel (Semua data, termasuk pending, untuk tabel riwayat)
+    # Khusus tabel, kita ambil semua status (pending/cancel) juga biar admin tau
+    all_transactions = Pembayaran.objects.all().select_related('pasien', 'booking').order_by('-created_at')
 
     context = {
-        'pembayaran_list': pembayaran_list,
-        'total_pendapatan': total_pendapatan,
-        'title': 'Data Pembayaran Konsultasi'
+        'title': 'Keuangan & Pembayaran',
+        'pembayaran_list': all_transactions,
+        'income_today': income_today,
+        'income_month': income_month,
+        'income_total': income_total,
+        'counselor_stats': counselor_stats,
+        # Kirim data grafik sebagai JSON string aman
+        'graph_dates': json.dumps(graph_dates),
+        'graph_values': json.dumps(graph_values),
     }
+    
     return render(request, 'konsultasi/pembayaran_list.html', context)
+def pembayaran_detail(request, pk):
+    # Mengambil data pembayaran berdasarkan ID (pk), atau tampilkan error 404 jika tidak ada
+    # select_related digunakan untuk optimasi query (mengambil data pasien & booking sekaligus)
+    pembayaran = get_object_or_404(Pembayaran.objects.select_related('pasien', 'booking'), pk=pk)
+    
+    context = {
+        'pembayaran': pembayaran,
+        'title': f'Detail Pembayaran #{pembayaran.id}'
+    }
+    return render(request, 'konsultasi/pembayaran_detail.html', context)

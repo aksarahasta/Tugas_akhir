@@ -1,85 +1,271 @@
 {% extends 'base.html' %}
+{% load humanize %}
+
+{% block page_title %}Keuangan{% endblock %}
+
+{% block extra_css %}
+<!-- Load ApexCharts -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<style>
+    .stat-card {
+        border: none;
+        border-radius: 16px;
+        transition: all 0.3s ease;
+        overflow: hidden;
+        position: relative;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    /* Pattern hiasan background */
+    .bg-pattern {
+        position: absolute;
+        right: -20px;
+        top: -20px;
+        font-size: 8rem;
+        opacity: 0.1;
+        transform: rotate(15deg);
+    }
+    .icon-box {
+        width: 48px; height: 48px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container-fluid px-4">
-    <h1 class="mt-4">Data Pembayaran Konsultasi</h1>
-    
-    <!-- Card Info Total -->
-    <div class="row mb-4">
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-primary text-white mb-4">
-                <div class="card-body">Total Pendapatan (Lunas)</div>
-                <div class="card-footer d-flex align-items-center justify-content-between">
-                    <span class="h4">Rp {{ total_pendapatan|floatformat:0 }}</span>
+
+<!-- 1. SECTION STATISTIK (Cards) -->
+<div class="row g-4 mb-4">
+    <!-- Card Hari Ini -->
+    <div class="col-md-4">
+        <div class="stat-card card bg-primary text-white h-100">
+            <div class="card-body p-4 position-relative z-1">
+                <i class="bi bi-calendar-check bg-pattern text-white"></i>
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="icon-box bg-white bg-opacity-25 text-white">
+                        <i class="bi bi-coin"></i>
+                    </div>
+                    <span class="fw-medium text-white-50 text-uppercase small">Pendapatan Hari Ini</span>
                 </div>
+                <h3 class="fw-bold mb-0">Rp {{ income_today|floatformat:0|intcomma }}</h3>
+                <small class="text-white-50">Update realtime</small>
             </div>
         </div>
     </div>
 
-    <!-- Tabel Riwayat -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <i class="fas fa-table me-1"></i>
-            Riwayat Transaksi
+    <!-- Card Bulan Ini -->
+    <div class="col-md-4">
+        <div class="stat-card card bg-success text-white h-100" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+            <div class="card-body p-4 position-relative z-1">
+                <i class="bi bi-graph-up-arrow bg-pattern text-white"></i>
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="icon-box bg-white bg-opacity-25 text-white">
+                        <i class="bi bi-wallet2"></i>
+                    </div>
+                    <span class="fw-medium text-white-50 text-uppercase small">Bulan Ini</span>
+                </div>
+                <h3 class="fw-bold mb-0">Rp {{ income_month|floatformat:0|intcomma }}</h3>
+                <small class="text-white-50">Akumulasi bulan berjalan</small>
+            </div>
         </div>
-        <div class="card-body">
-            <table class="table table-striped table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Pasien</th>
-                        <th>Konselor</th>
-                        <th>Jumlah</th>
-                        <th>Status</th>
-                        <th>Tanggal</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for bayar in pembayaran_list %}
-                    <tr>
-                        <!-- Ambil nama pasien -->
-                        <td>{{ bayar.pasien.nama }}</td>
-                        
-                        <!-- Asumsi: Nama konselor ada di dalam relasi booking -->
-                        <td>
-                            {% if bayar.booking and bayar.booking.konselor %}
-                                {{ bayar.booking.konselor.nama }}
-                            {% else %}
-                                -
-                            {% endif %}
-                        </td>
-                        
-                        <!-- Field 'jumlah' dari model -->
-                        <td>Rp {{ bayar.jumlah|floatformat:0 }}</td>
-                        
-                        <!-- Status -->
-                        <td>
-                            {% if bayar.status == 'paid' %}
-                                <span class="badge bg-success">Lunas</span>
-                            {% elif bayar.status == 'pending' %}
-                                <span class="badge bg-warning text-dark">Pending</span>
-                            {% else %}
-                                <span class="badge bg-secondary">{{ bayar.get_status_display }}</span>
-                            {% endif %}
-                        </td>
-                        
-                        <!-- Field 'created_at' -->
-                        <td>{{ bayar.created_at|date:"d M Y H:i" }}</td>
-                        
-                        <td>
-                            <a href="#" class="btn btn-sm btn-info text-white">Detail</a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" class="text-center text-muted py-4">
-                            Belum ada pembayaran.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    </div>
+
+    <!-- Card Total -->
+    <div class="col-md-4">
+        <div class="stat-card card bg-dark text-white h-100" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
+            <div class="card-body p-4 position-relative z-1">
+                <i class="bi bi-safe bg-pattern text-white"></i>
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="icon-box bg-white bg-opacity-25 text-white">
+                        <i class="bi bi-bank"></i>
+                    </div>
+                    <span class="fw-medium text-white-50 text-uppercase small">Total Pendapatan</span>
+                </div>
+                <h3 class="fw-bold mb-0">Rp {{ income_total|floatformat:0|intcomma }}</h3>
+                <small class="text-white-50">Sejak awal beroperasi</small>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- 2. SECTION GRAFIK & REKAP KONSELOR -->
+<div class="row g-4 mb-4">
+    <!-- Grafik -->
+    <div class="col-lg-8">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-header bg-white py-3 border-0">
+                <h6 class="fw-bold mb-0 text-dark">📈 Tren Pendapatan (7 Hari Terakhir)</h6>
+            </div>
+            <div class="card-body">
+                <div id="incomeChart" style="min-height: 300px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaderboard Konselor -->
+    <div class="col-lg-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold mb-0 text-dark">🏆 Top Konselor</h6>
+                <small class="text-muted">Berdasarkan Omzet</small>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for stat in counselor_stats %}
+                    <div class="list-group-item px-4 py-3 border-light d-flex align-items-center gap-3">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">
+                            {{ forloop.counter }}
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0 fw-bold text-dark">{{ stat.booking__konselor__nama|default:"Tanpa Nama" }}</h6>
+                            <small class="text-muted">{{ stat.jumlah_transaksi }} Transaksi</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="fw-bold text-success d-block">Rp {{ stat.total_pendapatan|floatformat:0|intcomma }}</span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="p-4 text-center text-muted">Belum ada data konselor.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3. TABEL RIWAYAT TRANSAKSI -->
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+        <h6 class="fw-bold mb-0 text-dark">📋 Riwayat Transaksi Terbaru</h6>
+        <button class="btn btn-sm btn-light border"><i class="bi bi-download me-1"></i> Export</button>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th class="ps-4 text-uppercase text-muted small fw-bold">ID & Pasien</th>
+                    <th class="text-uppercase text-muted small fw-bold">Konselor</th>
+                    <th class="text-uppercase text-muted small fw-bold">Tagihan</th>
+                    <th class="text-uppercase text-muted small fw-bold">Status</th>
+                    <th class="text-uppercase text-muted small fw-bold">Tanggal</th>
+                    <th class="text-end pe-4">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bayar in pembayaran_list %}
+                <tr>
+                    <td class="ps-4">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-light rounded p-2 me-3 text-primary fw-bold">
+                                #{{ bayar.id }}
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-bold text-dark">{{ bayar.pasien.nama }}</h6>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        {% if bayar.booking and bayar.booking.konselor %}
+                            <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill px-3">
+                                {{ bayar.booking.konselor.nama }}
+                            </span>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td class="fw-bold text-dark">
+                        Rp {{ bayar.jumlah|floatformat:0|intcomma }}
+                    </td>
+                    <td>
+                        {% if bayar.status == 'paid' %}
+                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">Lunas</span>
+                        {% elif bayar.status == 'pending' %}
+                            <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3">Pending</span>
+                        {% else %}
+                            <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-3">{{ bayar.get_status_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-muted small">
+                        {{ bayar.created_at|date:"d M Y, H:i" }}
+                    </td>
+                    <td class="text-end pe-4">
+                        <a href="{% url 'pembayaran_detail' bayar.id %}" class="btn btn-sm btn-light text-primary fw-bold">
+                            Detail
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-muted">Belum ada data transaksi.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Ambil data dengan aman (JSON.parse) agar editor tidak error (merah-merah)
+    // Filter 'escapejs' mengubah data jadi string aman, lalu JSON.parse mengembalikannya jadi array
+    var chartValues = JSON.parse('{{ graph_values|escapejs }}');
+    var chartDates = JSON.parse('{{ graph_dates|escapejs }}');
+
+    var options = {
+        series: [{
+            name: 'Pendapatan',
+            data: chartValues 
+        }],
+        chart: {
+            type: 'area', 
+            height: 300,
+            fontFamily: 'Plus Jakarta Sans, sans-serif',
+            toolbar: { show: false }
+        },
+        colors: ['#3b82f6'], 
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shadeIntensity: 1,
+                opacityFrom: 0.7,
+                opacityTo: 0.2,
+                stops: [0, 90, 100]
+            }
+        },
+        dataLabels: { enabled: false },
+        stroke: { curve: 'smooth', width: 3 },
+        xaxis: {
+            categories: chartDates, 
+            axisBorder: { show: false },
+            axisTicks: { show: false }
+        },
+        yaxis: {
+            labels: {
+                formatter: function (value) {
+                    return "Rp " + value.toLocaleString('id-ID');
+                }
+            }
+        },
+        grid: {
+            borderColor: '#f1f5f9',
+            strokeDashArray: 4,
+        },
+        tooltip: {
+            y: {
+                formatter: function (val) {
+                    return "Rp " + val.toLocaleString('id-ID')
+                }
+            }
+        }
+    };
+
+    var chart = new ApexCharts(document.querySelector("#incomeChart"), options);
+    chart.render();
+</script>
 {% endblock %}

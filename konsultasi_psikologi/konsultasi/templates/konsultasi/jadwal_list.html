@@ -10,41 +10,73 @@
     <thead class="table-dark">
         <tr>
             <th>Konselor</th>
-            <th>Tanggal</th>
+            <th>Hari</th>
             <th>Jam</th>
             <th>Fokus Konsultasi</th>
             <th>Status</th>
             <th>Aksi</th>
         </tr>
     </thead>
+<!-- ... code table header ... -->
+<tbody>
+    {% for jadwal in jadwal %}
+    <tr>
+        <!-- 1. Nama Konselor -->
+        <td>
+            <div class="d-flex align-items-center">
+                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center text-primary fw-bold me-2" style="width: 35px; height: 35px;">
+                    {{ jadwal.konselor.nama|make_list|first|upper }}
+                </div>
+                {{ jadwal.konselor.nama }}
+            </div>
+        </td>
+        
+        <!-- 2. Hari (Perbaikan: Gunakan get_hari_display tanpa filter date) -->
+        <td>
+            <span class="fw-bold text-dark">{{ jadwal.get_hari_display }}</span>
+        </td>
+        
+        <!-- 3. Jam (Perbaikan: Panggil jam_mulai & jam_selesai) -->
+        <td>
+            <div class="badge bg-light text-dark border">
+                <i class="bi bi-clock me-1"></i>
+                {{ jadwal.jam_mulai|time:"H:i" }} - {{ jadwal.jam_selesai|time:"H:i" }}
+            </div>
+        </td>
 
-    <tbody>
-        {% for j in jadwal %}
-        <tr>
-            <td>{{ j.konselor.nama }}</td>
-            <td>{{ j.tanggal }}</td>
-            <td>{{ j.jam }}</td>
-            <td>{{ j.fokus }}</td>
-            <td>
-                {% if j.is_booked %}
-                <span class="badge bg-danger">Terbooking</span>
-                {% else %}
-                <span class="badge bg-success">Tersedia</span>
-                {% endif %}
-            </td>
-            <td>
-                {% if not j.is_booked %}
-                <a href="{% url 'jadwal_edit' j.id %}" class="btn btn-warning btn-sm">Edit</a>
-                <a href="{% url 'jadwal_delete' j.id %}" class="btn btn-danger btn-sm"
+        <!-- 4. Fokus (Perbaikan: Sesuaikan nama field 'fokus') -->
+        <td>
+            {{ jadwal.fokus }}
+        </td>
+        
+        <!-- 5. Status -->
+        <td>
+            {% if jadwal.is_booked %}
+                <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill">Terbooking</span>
+            {% else %}
+                <span class="badge bg-success bg-opacity-10 text-success rounded-pill">Tersedia</span>
+            {% endif %}
+        </td>
+
+        <!-- 6. Aksi -->
+        <td>
+            {% if not j.is_booked %}
+                <a href="{% url 'jadwal_edit' jadwal.id %}" class="btn btn-warning btn-sm">Edit</a>
+                <a href="{% url 'jadwal_delete' jadwal.id %}" class="btn btn-danger btn-sm"
                    onclick="return confirm('Hapus jadwal ini?')">Hapus</a>
                 {% else %}
                 <span class="text-muted">Tidak bisa diubah</span>
                 {% endif %}
-            </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="6" class="text-center">Belum ada jadwal</td></tr>
-        {% endfor %}
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="6" class="text-center py-4 text-muted">Belum ada jadwal.</td>
+    </tr>
+    {% endfor %}
+</tbody>
+    <tbody>
+    
     </tbody>
 </table>
 

@@ -8,7 +8,7 @@ from konsultasi.models import JadwalBooking, Pembayaran
 from .models import Pasien, Kuesioner, RiwayatKonsultasi, BookingRequest
 from django.contrib.auth.models import User
 
-def register_view(request):
+def register(request):
     if request.method == 'POST':
         user_form = UserRegisterForm(request.POST)
         pasien_form = PasienForm(request.POST)
@@ -23,29 +23,40 @@ def register_view(request):
             )
 
             # 2. Ambil Pasien yang sudah dibuat oleh Signal tadi
-            # Kita akses pakai related_name 'pasien_profile'
-            pasien = user.pasien_profile
+            # Kita akses pakai related_name 'pasien_profile' (pastikan sama dengan di models.py)
+            try:
+                pasien = user.pasien_profile
+                
+                # 3. Update data Pasien tersebut dengan data dari Form
+                pasien.nama = pasien_form.cleaned_data.get('nama')
+                pasien.umur = pasien_form.cleaned_data.get('umur')
+                pasien.jenis_kelamin = pasien_form.cleaned_data.get('jenis_kelamin')
+                pasien.kontak = pasien_form.cleaned_data.get('kontak')
+                pasien.alamat = pasien_form.cleaned_data.get('alamat')
+                
+                # Simpan perubahan
+                pasien.save()
 
-            # 3. Update data Pasien tersebut dengan data dari Form
-            pasien.nama = pasien_form.cleaned_data.get('nama')
-            pasien.umur = pasien_form.cleaned_data.get('umur')
-            pasien.jenis_kelamin = pasien_form.cleaned_data.get('jenis_kelamin')
-            pasien.kontak = pasien_form.cleaned_data.get('kontak')
-            pasien.alamat = pasien_form.cleaned_data.get('alamat')
+                # 4. Login user otomatis & Redirect
+                login(request, user)
+                messages.success(request, "Akun berhasil dibuat. Silakan isi kuesioner.")
+                return redirect('kuesioner_isi')
             
-            # Simpan perubahan
-            pasien.save()
-
-            # 4. Login user otomatis & Redirect
-            login(request, user)
-            messages.success(request, "Akun berhasil dibuat. Silakan isi kuesioner.")
-            return redirect('kuesioner_isi')
+            except AttributeError:
+                # Fallback jika signal tidak jalan / related_name salah
+                messages.error(request, "Terjadi kesalahan sistem: Profil pasien tidak terbentuk otomatis.")
+                # Hapus user agar tidak jadi sampah
+                user.delete()
             
     else:
         user_form = UserRegisterForm()
         pasien_form = PasienForm()
-        
-    return render(request, 'pasien/register.html', {'user_form': user_form, 'pasien_form': pasien_form})
+    
+    # Render template dengan dua form context
+    return render(request, 'pasien/register.html', {
+        'user_form': user_form, 
+        'pasien_form': pasien_form
+    })
 
 # --- Di bawah ini biarkan saja sama seperti sebelumnya ---
 

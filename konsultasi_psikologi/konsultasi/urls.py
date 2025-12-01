@@ -16,8 +16,11 @@ urlpatterns = [
 
     # Sesi Konsultasi
     path('sesi/', views.sesi_list, name='sesi_list'),
+    path('sesi/<int:pk>/', views.sesi_detail, name='sesi_detail'),
 
     # Pembayaran
-     path('pembayaran/', views.pembayaran_list, name='pembayaran_list'),
+
     path('pembayaran/', views.daftar_pembayaran, name='daftar_pembayaran'),
+     path('pembayaran/<int:pk>/', views.pembayaran_detail, name='pembayaran_detail'),
+
 ]

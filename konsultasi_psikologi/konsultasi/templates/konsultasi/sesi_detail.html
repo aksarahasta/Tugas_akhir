@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Detail Sesi{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        
+        <!-- Tombol Kembali -->
+        <a href="{% url 'sesi_list' %}" class="btn btn-light mb-4 shadow-sm text-muted border-0" style="background: white;">
+            <i class="bi bi-arrow-left me-2"></i> Kembali ke Daftar Sesi
+        </a>
+
+        <!-- Card Detail -->
+        <div class="card border-0 shadow-lg overflow-hidden" style="border-radius: 16px;">
+            <div class="card-header border-0 py-4 px-5 text-white position-relative" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);">
+                <div class="d-flex justify-content-between align-items-center position-relative z-1">
+                    <div>
+                        <h5 class="fw-bold mb-1">Sesi Konsultasi #{{ sesi.id }}</h5>
+                        <p class="mb-0 text-white-50 small">Informasi lengkap jadwal temu</p>
+                    </div>
+                    <div class="bg-white bg-opacity-25 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                        <i class="bi bi-calendar-event fs-4 text-white"></i>
+                    </div>
+                </div>
+                <!-- Hiasan Background -->
+                <div style="position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+            </div>
+
+            <div class="card-body p-5">
+                <div class="row g-4">
+                    <!-- Kolom Kiri: Info Utama -->
+                    <div class="col-md-6 border-end border-light">
+                        <h6 class="text-uppercase text-muted small fw-bold mb-4">Data Pasien & Konselor</h6>
+                        
+                        <div class="mb-4">
+                            <label class="small text-muted d-block mb-1">Pasien</label>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">
+                                    {{ sesi.pasien.nama|make_list|first|upper }}
+                                </div>
+                                <span class="fw-bold text-dark">{{ sesi.pasien.nama }}</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="small text-muted d-block mb-1">Konselor</label>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">
+                                    {{ sesi.konselor.nama|make_list|first|upper }}
+                                </div>
+                                <span class="fw-bold text-dark">{{ sesi.konselor.nama }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kolom Kanan: Waktu & Status -->
+                    <div class="col-md-6 ps-md-5">
+                        <h6 class="text-uppercase text-muted small fw-bold mb-4">Waktu & Status</h6>
+
+                        <div class="mb-3">
+                            <label class="small text-muted d-block mb-1">Tanggal & Jam</label>
+                            <h5 class="fw-bold text-dark mb-0">{{ sesi.tanggal|date:"d F Y" }}</h5>
+                            <span class="text-primary fw-bold">{{ sesi.jam_mulai }} WIB</span>
+                        </div>
+
+                        <div class="mb-3 pt-3">
+                            <label class="small text-muted d-block mb-1">Status Sesi</label>
+                            <!-- Sesuaikan field status di model Anda -->
+                            <span class="badge bg-info bg-opacity-10 text-info px-3 py-2 rounded-pill">
+                                {{ sesi.status|default:"Terjadwal" }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-footer bg-light border-0 p-4 text-end">
+                <!-- Contoh tombol aksi -->
+                <button class="btn btn-outline-danger btn-sm rounded-3 me-2">Batalkan Sesi</button>
+                <button class="btn btn-primary btn-sm rounded-3 shadow-sm" onclick="window.print()">Cetak Tiket</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

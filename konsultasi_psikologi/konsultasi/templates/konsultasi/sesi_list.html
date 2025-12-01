@@ -42,7 +42,7 @@
 
                 <td>
                     <!-- Pastikan URL 'sesi_detail' sudah ada di urls.py, jika belum ganti # -->
-                    <button class="btn btn-info btn-sm" disabled>Detail</button>
+                    <a href="{% url 'sesi_detail' s.id %}" class="btn btn-info btn-sm" >Detail</a>
                 </td>
             </tr>
             {% empty %}

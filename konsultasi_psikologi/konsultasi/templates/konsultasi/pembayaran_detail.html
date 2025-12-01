@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Detail Pembayaran</h1>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-info-circle me-1"></i>
+            Informasi Pembayaran #{{ pembayaran.id }}
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th style="width: 30%;">Pasien</th>
+                            <td>: {{ pembayaran.pasien.nama }}</td>
+                        </tr>
+                        <tr>
+                            <th>Konselor</th>
+                            <td>: 
+                                {% if pembayaran.booking and pembayaran.booking.konselor %}
+                                    {{ pembayaran.booking.konselor.nama }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Tanggal Bayar</th>
+                            <td>: {{ pembayaran.created_at|date:"d F Y H:i" }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th style="width: 30%;">Jumlah</th>
+                            <td>: <strong>Rp {{ pembayaran.jumlah|floatformat:0 }}</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Status</th>
+                            <td>: 
+                                {% if pembayaran.status == 'paid' %}
+                                    <span class="badge bg-success">Lunas</span>
+                                {% elif pembayaran.status == 'pending' %}
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ pembayaran.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <hr>
+            
+            <div class="d-flex justify-content-end">
+                <a href="{% url 'daftar_pembayaran' %}" class="btn btn-secondary me-2">Kembali</a>
+                <a href="#" class="btn btn-primary" onclick="window.print()"><i class="fas fa-print"></i> Cetak</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
