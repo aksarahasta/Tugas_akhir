@@ -4,98 +4,100 @@
 
 {% block content %}
 <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
-    <div class="card-body p-4 p-md-5">
+    
+    <!-- Wrapper ini yang membuat konten bisa discroll jika terlalu panjang -->
+    <div class="card-body p-0" style="max-height: 85vh; overflow-y: auto;">
         
-        <!-- Header -->
-        <div class="text-center mb-4">
-            <div class="bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
-                <i class="bi bi-person-plus-fill fs-3"></i>
+        <div class="p-4 p-md-5">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <div class="bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <i class="bi bi-person-plus-fill fs-3"></i>
+                </div>
+                <h4 class="fw-bold text-dark">Buat Akun Baru</h4>
+                <p class="text-muted small">Lengkapi data di bawah ini untuk mendaftar</p>
             </div>
-            <h4 class="fw-bold text-dark">Buat Akun Baru</h4>
-            <p class="text-muted small">Lengkapi data akun dan profil pasien Anda</p>
+
+            <form method="post">
+                {% csrf_token %}
+                
+                <!-- Global Errors -->
+                {% if user_form.non_field_errors or pasien_form.non_field_errors %}
+                    <div class="alert alert-danger py-2 small rounded-3 border-0 mb-3">
+                        {{ user_form.non_field_errors }}
+                        {{ pasien_form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <!-- 1. BAGIAN AKUN -->
+                <h6 class="fw-bold text-primary mb-3 text-uppercase small ls-1"><i class="bi bi-shield-lock me-2"></i>Informasi Akun</h6>
+                
+                <div class="vstack gap-3 mb-4">
+                    {% for field in user_form %}
+                    <div>
+                        <label class="form-label small fw-bold text-muted ms-1">{{ field.label }}</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-muted ps-3 d-flex justify-content-center icon-box">
+                                {% if 'user' in field.name %} <i class="bi bi-person"></i>
+                                {% elif 'email' in field.name %} <i class="bi bi-envelope"></i>
+                                {% elif 'pass' in field.name %} <i class="bi bi-key"></i>
+                                {% else %} <i class="bi bi-pencil"></i>
+                                {% endif %}
+                            </span>
+                            {{ field }}
+                        </div>
+                        {% if field.errors %}
+                            <div class="text-danger small mt-1 ms-1">{{ field.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <hr class="border-secondary border-opacity-10 my-4">
+
+                <!-- 2. BAGIAN DATA DIRI -->
+                <h6 class="fw-bold text-success mb-3 text-uppercase small ls-1"><i class="bi bi-person-vcard me-2"></i>Data Diri Pasien</h6>
+                
+                <div class="vstack gap-3 mb-4">
+                    {% for field in pasien_form %}
+                    <div>
+                        <label class="form-label small fw-bold text-muted ms-1">{{ field.label }}</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-muted ps-3 d-flex justify-content-center icon-box">
+                                <i class="bi bi-card-text"></i>
+                            </span>
+                            {{ field }}
+                        </div>
+                        {% if field.errors %}
+                            <div class="text-danger small mt-1 ms-1">{{ field.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <button type="submit" class="btn btn-success w-100 py-2 rounded-3 fw-bold shadow-sm mb-3">
+                    Daftar Sekarang
+                </button>
+                
+                <div class="text-center">
+                    <span class="text-muted small">Sudah punya akun?</span>
+                    <a href="{% url 'login' %}" class="text-decoration-none fw-bold text-success ms-1">Login di sini</a>
+                </div>
+            </form>
         </div>
-
-        <form method="post">
-            {% csrf_token %}
-            
-            <!-- Global Errors -->
-            {% if user_form.non_field_errors or pasien_form.non_field_errors %}
-                <div class="alert alert-danger py-2 small rounded-3 border-0 mb-3">
-                    {{ user_form.non_field_errors }}
-                    {{ pasien_form.non_field_errors }}
-                </div>
-            {% endif %}
-
-            <!-- 1. BAGIAN AKUN (Username, Email, Pass) -->
-            <h6 class="fw-bold text-primary mb-3 text-uppercase small ls-1"><i class="bi bi-shield-lock me-2"></i>Informasi Akun</h6>
-            <div class="vstack gap-3 mb-4">
-                {% for field in user_form %}
-                <div>
-                    <label class="form-label small fw-bold text-muted ms-1">{{ field.label }}</label>
-                    <div class="input-group">
-                        <!-- Ikon Otomatis -->
-                        <span class="input-group-text bg-light border-end-0 text-muted ps-3 d-flex justify-content-center" style="width: 45px;">
-                            {% if 'user' in field.name %} <i class="bi bi-person"></i>
-                            {% elif 'email' in field.name %} <i class="bi bi-envelope"></i>
-                            {% elif 'pass' in field.name %} <i class="bi bi-key"></i>
-                            {% else %} <i class="bi bi-pencil"></i>
-                            {% endif %}
-                        </span>
-                        {{ field }}
-                    </div>
-                    {% if field.errors %}
-                        <div class="text-danger small mt-1 ms-1">{{ field.errors.0 }}</div>
-                    {% endif %}
-                </div>
-                {% endfor %}
-            </div>
-
-            <hr class="border-secondary border-opacity-10 my-4">
-
-            <!-- 2. BAGIAN DATA DIRI (Nama, Umur, Alamat) -->
-            <h6 class="fw-bold text-success mb-3 text-uppercase small ls-1"><i class="bi bi-person-vcard me-2"></i>Data Diri Pasien</h6>
-            <div class="vstack gap-3 mb-4">
-                {% for field in pasien_form %}
-                <div>
-                    <label class="form-label small fw-bold text-muted ms-1">{{ field.label }}</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-light border-end-0 text-muted ps-3 d-flex justify-content-center" style="width: 45px;">
-                            <i class="bi bi-card-text"></i>
-                        </span>
-                        {{ field }}
-                    </div>
-                    {% if field.errors %}
-                        <div class="text-danger small mt-1 ms-1">{{ field.errors.0 }}</div>
-                    {% endif %}
-                </div>
-                {% endfor %}
-            </div>
-
-            <button type="submit" class="btn btn-success w-100 py-2 rounded-3 fw-bold shadow-sm mb-3">
-                Daftar Sekarang
-            </button>
-            
-            <div class="text-center">
-                <span class="text-muted small">Sudah punya akun?</span>
-                <a href="{% url 'login' %}" class="text-decoration-none fw-bold text-success ms-1">Login di sini</a>
-            </div>
-        </form>
     </div>
 </div>
 
 <style>
-    /* Style Tambahan agar input Django rapi & RESPONSIF */
+    /* Styling Input */
     .input-group input, .input-group select, .input-group textarea {
         border-left: 0;
         background-color: #f8f9fa;
         border-radius: 0 0.375rem 0.375rem 0;
         padding: 0.7rem 1rem;
         border: 1px solid #dee2e6;
-        
-        /* KUNCI PERBAIKAN: */
-        flex: 1 1 auto; /* Mengambil sisa ruang yang tersedia */
-        min-width: 0;   /* Mencegah input 'meluap' keluar container */
-        width: auto;    /* Jangan pakai width: 1% */
+        min-width: 0;
+        flex: 1 1 auto;
     }
     
     .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
@@ -103,15 +105,25 @@
         border-color: #198754;
         box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
         outline: 0;
-        position: relative; 
         z-index: 5;
     }
     
+    .icon-box { min-width: 45px; }
     .ls-1 { letter-spacing: 1px; }
-    
-    /* Perbaikan ikon agar lebarnya konsisten */
-    .input-group-text {
-        min-width: 45px; /* Lebar minimum ikon */
+
+    /* Custom Scrollbar agar terlihat manis */
+    .card-body::-webkit-scrollbar {
+        width: 6px;
+    }
+    .card-body::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    .card-body::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 3px;
+    }
+    .card-body::-webkit-scrollbar-thumb:hover {
+        background: #bbb;
     }
 </style>
 {% endblock %}
