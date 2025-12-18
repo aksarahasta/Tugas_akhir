@@ -75,3 +75,15 @@ class PembayaranKonsultasiForm(forms.ModelForm):
     class Meta:
         model = Pembayaran
         fields = ['booking', 'jumlah', 'status']
+
+class UploadBuktiPembayaranForm(forms.ModelForm):
+    class Meta:
+        model = Pembayaran
+        fields = ['bukti_pembayaran']
+        widgets = {
+            'bukti_pembayaran': forms.ClearableFileInput(attrs={
+                'accept': 'image/*,.pdf',
+                'class': 'form-control-file'
+            })
+        }
+    
