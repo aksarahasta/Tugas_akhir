@@ -3,7 +3,7 @@ from django.contrib import messages
 # Import model yang SUDAH DIPERBAIKI namanya
 from .models import Konselor, JadwalKonselor, JadwalBooking, Pembayaran
 from django.db.models import Sum, Count
-from .forms import KonselorForm, JadwalForm, SesiKonsultasiForm, PembayaranKonsultasiForm
+from .forms import KonselorForm, JadwalForm, SesiKonsultasiForm, PembayaranKonsultasiForm, UploadBuktiPembayaranForm
 import json
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
@@ -103,6 +103,65 @@ def pembayaran_list(request):
     data = Pembayaran.objects.select_related('booking').all()
     return render(request, 'konsultasi/pembayaran_list.html', {'data': data})
 
+
+@login_required
+
+def upload_bukti_pembayaran(request, payment_id):
+    """View for patients to upload payment proof"""
+    pembayaran = get_object_or_404(Pembayaran, id=payment_id)
+    
+    # Authorization check - patient can only upload for their own payments
+    if request.user != pembayaran.pasien.user:
+        messages.error(request, "Akses ditolak.")
+        return redirect('dashboard')
+    
+    # Check if payment is eligible for upload
+    if pembayaran.status not in ['pending', 'rejected']:
+        messages.warning(request, "Pembayaran ini tidak dapat diunggah bukti.")
+        return redirect('payment_detail', payment_id=payment_id)
+    
+    if request.method == 'POST':
+        form = UploadBuktiPembayaranForm(request.POST, request.FILES, instance=pembayaran)
+        if form.is_valid():
+            with transaction.atomic():  # NEW: Transaction for safety
+                pembayaran = form.save(commit=False)
+                pembayaran.status = 'uploaded'  # NEW: Change status
+                pembayaran.tanggal_upload = timezone.now()  # NEW: Set timestamp
+                pembayaran.save()
+                
+                # NEW: Update booking status
+                if pembayaran.booking.status == 'confirmed':
+                    pembayaran.booking.status = 'waiting_payment_verification'
+                    pembayaran.booking.save()
+                     messages.success(request, "Bukti pembayaran berhasil diunggah! Menunggu verifikasi admin.")
+            return redirect('payment_detail', payment_id=pembayaran.id)
+    else:
+        form = UploadBuktiPembayaranForm(instance=pembayaran)
+    
+    return render(request, 'payments/upload_bukti.html', {
+        'form': form,
+        'pembayaran': pembayaran,
+        'title': 'Upload Bukti Pembayaran'
+    })
+
+@login_required
+def payment_detail(request, payment_id):
+    """View payment details"""
+    pembayaran = get_object_or_404(Pembayaran, id=payment_id)
+    
+    # Authorization: patient sees their own, staff sees all
+    if request.user != pembayaran.pasien.user and not request.user.is_staff:
+        messages.error(request, "Akses ditolak.")
+        return redirect('home')
+    
+    # NEW: Check if patient can upload proof
+    can_upload = pembayaran.status in ['pending', 'rejected']
+    
+    return render(request, 'payments/payment_detail.html', {
+        'pembayaran': pembayaran,
+        'can_upload': can_upload,  # NEW: Pass this to template
+        'title': 'Detail Pembayaran'
+    })
 
 @login_required
 def daftar_pembayaran(request):
