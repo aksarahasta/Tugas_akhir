@@ -4,52 +4,79 @@
 {% block page_title %}Jadwal Konsultasi Saya{% endblock %}
 
 {% block content %}
-<div class="card shadow-sm">
-  <div class="card-body">
+<div class="card shadow-sm border-0">
+  <div class="card-body p-4">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h6 class="m-0 font-weight-bold text-primary">Daftar Sesi Konsultasi</h6>
+        <div class="btn-group shadow-sm" role="group">
+            <span class="btn btn-light btn-sm text-muted disabled border">Urutkan:</span>
+            <a href="?sort=baru" class="btn btn-sm {% if current_sort == 'baru' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                <i class="bi bi-sort-down"></i> Terbaru
+            </a>
+            <a href="?sort=lama" class="btn btn-sm {% if current_sort == 'lama' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                <i class="bi bi-sort-up"></i> Terlama
+            </a>
+        </div>
+    </div>
+
     <div class="table-responsive">
-      <table class="table table-hover">
+      <table class="table table-hover align-middle">
         <thead class="table-light">
           <tr>
-            <th>Tanggal Order</th>
             <th>Konselor</th>
-            <th>Jadwal</th>
+            <th>Tanggal Sesi</th> <th>Jam</th>
             <th>Biaya</th>
-            <th>Status</th>
-            <th>Aksi</th>
+            <th>Status Pembayaran</th>
+            <th class="text-center">Aksi</th>
           </tr>
         </thead>
         <tbody>
           {% for b in bookings %}
             <tr>
-              <td>{{ b.tanggal_sesi|date:"d M Y" }}</td>
-              <td>{{ b.konselor.nama }}</td>
+              <td class="fw-bold text-dark">{{ b.konselor.nama }}</td>
+              
+              <td>
+                  <i class="bi bi-calendar3 me-2 text-primary"></i>
+                  {{ b.tanggal_sesi|date:"d M Y" }}
+              </td>
+
               <td>
                 {% if b.jadwal %}
-                   {{ b.jadwal.hari }}, {{ b.jadwal.jam_mulai|time:"H:i" }}
+                   <i class="bi bi-clock me-1 text-secondary"></i>
+                   {{ b.jadwal.jam_mulai|time:"H:i" }}
                 {% else %}
                    <span class="text-muted">-</span>
                 {% endif %}
               </td>
-              <td>Rp {{ b.total_biaya|floatformat:0 }}</td>
+              
+              <td class="text-success fw-semibold">Rp {{ b.total_biaya|floatformat:0 }}</td>
+              
               <td>
                 {% if b.is_paid %}
-                  <span class="badge bg-success">Lunas</span>
-                  <span class="badge bg-primary">{{ b.get_status_display }}</span>
+                  <span class="badge rounded-pill bg-success px-3">Lunas</span>
+                  <span class="badge rounded-pill bg-light text-primary border border-primary px-3">{{ b.get_status_display }}</span>
                 {% else %}
-                  <span class="badge bg-warning text-dark">Belum Bayar</span>
+                  <span class="badge rounded-pill bg-warning text-dark px-3">Belum Bayar</span>
                 {% endif %}
               </td>
-              <td>
+
+              <td class="text-center">
                 {% if not b.is_paid %}
-                  <a href="{% url 'booking_pay' b.id %}" class="btn btn-sm btn-primary">Bayar Sekarang</a>
+                  <a href="{% url 'booking_pay' b.id %}" class="btn btn-sm btn-primary shadow-sm px-3">
+                      <i class="bi bi-wallet2 me-1"></i> Bayar
+                  </a>
                 {% else %}
-                  <button class="btn btn-sm btn-secondary" disabled>Sudah Lunas</button>
+                  <a href="{% url 'booking_pay' b.id %}" class="btn btn-sm btn-outline-secondary px-3">Detail</a>
                 {% endif %}
               </td>
             </tr>
           {% empty %}
             <tr>
-              <td colspan="6" class="text-center py-4 text-muted">Belum ada jadwal konsultasi.</td>
+              <td colspan="6" class="text-center py-5 text-muted">
+                  <i class="bi bi-calendar-x d-block mb-2 h3"></i>
+                  Belum ada jadwal konsultasi yang ditemukan.
+              </td>
             </tr>
           {% endfor %}
         </tbody>
@@ -58,8 +85,10 @@
   </div>
 </div>
 
-        <a href="{% url 'dashboard' %}" class="btn btn-light mb-4 shadow-sm text-muted border-0 hover-scale" style="background: white;">
-            <i class="bi bi-arrow-left me-2"></i> Kembali ke Dashboard
-        </a>
+<div class="mt-4">
+    <a href="{% url 'dashboard' %}" class="btn btn-light shadow-sm text-muted border-0 hover-scale" style="background: white;">
+        <i class="bi bi-arrow-left me-2"></i> Kembali ke Dashboard
+    </a>
+</div>
 
 {% endblock %}

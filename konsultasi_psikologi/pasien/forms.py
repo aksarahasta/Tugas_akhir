@@ -37,27 +37,58 @@ class KuesionerForm(forms.ModelForm):
             'q5': forms.NumberInput(attrs={'min':1,'max':5}),
         }
 
-# --- FORM BARU UNTUK BOOKING ---
+# --- FORM BOOKING: DIFOKUSKAN PADA TANGGAL & PENCEGAHAN BENTROK ---
 class BookingForm(forms.ModelForm):
     # Pasien memilih jadwal yang SUDAH DIBUAT konselor
     jadwal = forms.ModelChoiceField(
-        queryset=JadwalKonselor.objects.filter(is_booked=False), # Hanya tampilkan yg belum dibooking
-        label="Pilih Jadwal Tersedia",
+        queryset=JadwalKonselor.objects.filter(is_booked=False), 
+        label="Pilih Jam Tersedia",
         widget=forms.Select(attrs={'class': 'form-select'})
     )
 
     class Meta:
         model = JadwalBooking
-        fields = ['konselor', 'jadwal'] # Pasien pilih konselor & jadwalnya
+        # Menambahkan 'tanggal_sesi' agar pasien bisa memilih tanggal konsultasi
+        fields = ['tanggal_sesi', 'konselor', 'jadwal'] 
+        labels = {
+            'tanggal_sesi': 'Pilih Tanggal Konsultasi',
+            'konselor': 'Pilih Konselor',
+        }
         widgets = {
+            # Menggunakan type='date' agar browser memunculkan kalender
+            'tanggal_sesi': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date'
+            }),
             'konselor': forms.Select(attrs={'class': 'form-select'}),
         }
 
-# --- FORM UNTUK PEMBAYARAN PASIEN ---
+    def clean(self):
+        cleaned_data = super().clean()
+        tanggal = cleaned_data.get('tanggal_sesi')
+        konselor = cleaned_data.get('konselor')
+        jadwal = cleaned_data.get('jadwal')
+
+        # Logika Pencegahan Double Booking:
+        # Mengecek apakah kombinasi Tanggal, Konselor, dan Jam sudah ada di database
+        if tanggal and konselor and jadwal:
+            bentrok = JadwalBooking.objects.filter(
+                tanggal_sesi=tanggal,
+                konselor=konselor,
+                jadwal=jadwal,
+                status__in=['pending', 'terjadwal']
+            ).exists()
+
+            if bentrok:
+                # Memberikan pesan error jika jadwal sudah diambil
+                raise forms.ValidationError(
+                    f"Maaf, konselor {konselor.nama} sudah dipesan pada tanggal {tanggal} di jam tersebut. Silakan pilih waktu atau tanggal lain."
+                )
+        
+        return cleaned_data
+
+# --- FORM UNTUK PEMBAYARAN PASIEN (KEMBALI KE KODE AWAL ANDA) ---
 class PembayaranForm(forms.ModelForm):
     class Meta:
         model = Pembayaran
-        # Field ini biasanya diisi otomatis di view, tapi kita bisa tampilkan 'jumlah' sebagai readonly di HTML nanti
-        fields = [] 
-        # Kita kosongkan fields karena Pasien hanya perlu klik "Konfirmasi Bayar"
-        # Data jumlah dan booking akan di-set otomatis di views.py
+        fields = []

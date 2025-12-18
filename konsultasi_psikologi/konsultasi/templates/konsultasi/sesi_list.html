@@ -5,6 +5,18 @@
 
 {% block content %}
 
+<div class="d-flex justify-content-end mb-3">
+    <div class="btn-group shadow-sm" role="group">
+        <span class="btn btn-light btn-sm text-muted disabled border">Urutkan Tanggal:</span>
+        <a href="?sort=baru" class="btn btn-sm {% if current_sort == 'baru' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+            <i class="bi bi-sort-down"></i> Terbaru
+        </a>
+        <a href="?sort=lama" class="btn btn-sm {% if current_sort == 'lama' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+            <i class="bi bi-sort-up"></i> Terlama
+        </a>
+    </div>
+</div>
+
 <div class="card shadow-sm border-0">
   <div class="card-body p-0">
     <div class="table-responsive">
@@ -21,18 +33,16 @@
         </thead>
 
         <tbody>
-            <!-- PERBAIKAN 1: Gunakan 'data' (sesuai views.py) -->
             {% for s in booking %}
             <tr>
                 <td>{{ s.pasien.nama }}</td>
                 <td>{{ s.konselor.nama }}</td>
                 
-                <!-- PERBAIKAN 2: Cek jika jadwal ada, dan gunakan jam_mulai -->
-                <td>{{ s.jadwal.tanggal|default:"-" }}</td>
+                <td class="fw-bold">{{ s.tanggal_sesi|date:"d/m/Y" }}</td>
+                
                 <td>{{ s.jadwal.jam_mulai|default:"-" }}</td>
 
                 <td>
-                    <!-- PERBAIKAN 3: Gunakan is_paid (sesuai models.py) -->
                     {% if s.is_paid %}
                     <span class="badge bg-success">Lunas</span>
                     {% else %}
@@ -41,8 +51,7 @@
                 </td>
 
                 <td>
-                    <!-- Pastikan URL 'sesi_detail' sudah ada di urls.py, jika belum ganti # -->
-                    <a href="{% url 'sesi_detail' s.id %}" class="btn btn-info btn-sm" >Detail</a>
+                    <a href="{% url 'sesi_detail' s.id %}" class="btn btn-info btn-sm text-white">Detail</a>
                 </td>
             </tr>
             {% empty %}

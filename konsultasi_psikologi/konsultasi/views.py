@@ -73,9 +73,21 @@ def jadwal_delete(request, pk):
 # SESI & PEMBAYARAN
 # =============================
 def sesi_list(request):
-    # Saya tambahkan 'jadwal' di select_related biar tanggal & jam langsung ke-load
-    data = JadwalBooking.objects.select_related('pasien', 'konselor', 'jadwal').all()
-    return render(request, 'konsultasi/sesi_list.html', {'booking': data})
+    # MENAMBAHKAN FITUR SORTIR TANGGAL
+    sort_by = request.GET.get('sort', 'baru')
+    
+    if sort_by == 'lama':
+        order = 'tanggal_sesi'  # Urutkan dari tanggal lama ke baru
+    else:
+        order = '-tanggal_sesi' # Urutkan dari tanggal baru ke lama (Default)
+
+    # Mengambil data dengan urutan yang dipilih
+    data = JadwalBooking.objects.select_related('pasien', 'konselor', 'jadwal').order_by(order)
+    
+    return render(request, 'konsultasi/sesi_list.html', {
+        'booking': data,
+        'current_sort': sort_by # Digunakan untuk menandai tombol aktif di HTML
+    })
 
 def sesi_detail(request, pk):
     # Ambil data sesi berdasarkan ID
@@ -145,6 +157,7 @@ def daftar_pembayaran(request):
     }
     
     return render(request, 'konsultasi/pembayaran_list.html', context)
+
 def pembayaran_detail(request, pk):
     # Mengambil data pembayaran berdasarkan ID (pk), atau tampilkan error 404 jika tidak ada
     # select_related digunakan untuk optimasi query (mengambil data pasien & booking sekaligus)

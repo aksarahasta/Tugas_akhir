@@ -21,7 +21,10 @@ urlpatterns = [
 
     # BOOKING
     path('booking/buat/', views.booking_create, name='booking_create'),
+    path('booking/riwayat/', views.booking_list, name='booking_list'),
+    path('booking/bayar/<int:booking_id>/', views.booking_pay, name='booking_pay'),
 
-    path('booking/riwayat/', views.booking_list, name='booking_list'), # List riwayat
-    path('booking/bayar/<int:booking_id>/', views.booking_pay, name='booking_pay'), # Halaman bayar
+    # AJAX HELPER (Tambahkan ini)
+    # Digunakan untuk mengambil jam yang sesuai dengan hari pada tanggal yang dipilih
+    path('ajax/get-jadwal/', views.get_jadwal_opt, name='ajax_get_jadwal'),
 ]

@@ -14,7 +14,6 @@ class Konselor(models.Model):
         return self.nama
 
 # --- MODEL 2: JADWAL PRAKTEK (Slot Waktu) ---
-# Perhatikan: Class ini TIDAK BOLEH punya field bernama 'jadwal' yang mengarah ke dirinya sendiri
 class JadwalKonselor(models.Model):
     HARI_CHOICES = [
         ('Senin', 'Senin'),
@@ -27,18 +26,17 @@ class JadwalKonselor(models.Model):
     ]
     
     konselor = models.ForeignKey(Konselor, on_delete=models.CASCADE)
-    # Ganti tanggal menjadi hari
     hari = models.CharField(max_length=10, choices=HARI_CHOICES)
     jam_mulai = models.TimeField()
     jam_selesai = models.TimeField()
     fokus = models.CharField(max_length=200)
     is_booked = models.BooleanField(default=False)
 
+    # PERBAIKAN: Hanya menampilkan nama konselor dan jam (tanpa fokus)
     def __str__(self):
-        return f"{self.konselor.nama} - {self.hari}"
+        return f"{self.konselor.nama} - ({self.jam_mulai.strftime('%H:%M')} s/d {self.jam_selesai.strftime('%H:%M')})"
 
 # --- MODEL 3: TRANSAKSI BOOKING ---
-# Class inilah yang memanggil JadwalKonselor di atas
 class JadwalBooking(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Menunggu Pembayaran'),
@@ -47,15 +45,14 @@ class JadwalBooking(models.Model):
         ('batal', 'Batal'),
     ]
 
-    # UBAH related_name AGAR TIDAK BENTROK DENGAN pasien.BookingRequest
     pasien = models.ForeignKey(Pasien, on_delete=models.CASCADE, related_name='jadwal_bookings')
     konselor = models.ForeignKey(Konselor, on_delete=models.CASCADE)
-    
-    # Field 'jadwal' menghubungkan Booking ini ke Slot JadwalKonselor
-    # Karena JadwalKonselor sudah didefinisikan di atas, ini valid.
     jadwal = models.ForeignKey(JadwalKonselor, on_delete=models.CASCADE, null=True, blank=True)
     
-    tanggal_sesi = models.DateTimeField(auto_now_add=True) 
+    # Tetap DateField agar bisa dipilih manual di form
+    tanggal_sesi = models.DateField() 
+    
+    created_at = models.DateTimeField(auto_now_add=True) 
     catatan_konselor = models.TextField(blank=True, null=True)
     total_biaya = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
@@ -70,7 +67,7 @@ class JadwalBooking(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Booking {self.pasien} - Rp {self.total_biaya:,.0f}"
+        return f"Booking {self.pasien.nama} - {self.tanggal_sesi}"
 
 # --- MODEL 4: PEMBAYARAN ---
 class Pembayaran(models.Model):
@@ -85,5 +82,4 @@ class Pembayaran(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Pembayaran {self.pasien} - {self.status}"
-    
+        return f"Pembayaran {self.pasien.nama} - {self.status}"

@@ -14,10 +14,17 @@
       <div class="card-body">
         <p class="text-muted small mb-4">Silakan pilih konselor dan waktu yang Anda inginkan. Permintaan Anda akan berstatus 'Pending' hingga dikonfirmasi.</p>
 
-        <form method="post">
+        <form method="post" id="bookingForm">
           {% csrf_token %}
           
-          <!-- Loop field form agar rapi -->
+          {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+              <div class="alert alert-danger shadow-sm border-0 small mb-4">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ error }}
+              </div>
+            {% endfor %}
+          {% endif %}
+          
           {% for field in form %}
             <div class="mb-3">
               <label class="form-label fw-semibold">{{ field.label }}</label>
@@ -41,7 +48,51 @@
   </div>
 </div>
 
-        <a href="{% url 'dashboard' %}" class="btn btn-light mb-4 shadow-sm text-muted border-0 hover-scale" style="background: white;">
-            <i class="bi bi-arrow-left me-2"></i> Kembali ke Dashboard
-        </a>
+<a href="{% url 'dashboard' %}" class="btn btn-light mb-4 shadow-sm text-muted border-0 hover-scale" style="background: white;">
+    <i class="bi bi-arrow-left me-2"></i> Kembali ke Dashboard
+</a>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tanggalInput = document.querySelector('input[type="date"]');
+        const konselorSelect = document.querySelector('select[name="konselor"]');
+        const jadwalSelect = document.querySelector('select[name="jadwal"]');
+
+        function updateJadwalOptions() {
+            const tanggal = tanggalInput.value;
+            const konselorId = konselorSelect.value;
+
+            // Jika tanggal dan konselor sudah dipilih, lakukan request AJAX
+            if (tanggal && konselorId) {
+                fetch(`/pasien/ajax/get-jadwal/?tanggal=${tanggal}&konselor_id=${konselorId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Kosongkan pilihan jadwal yang lama
+                        jadwalSelect.innerHTML = '<option value="">---------</option>';
+                        
+                        // Isi dengan jadwal hasil filter hari
+                        if (data.jadwals && data.jadwals.length > 0) {
+                            data.jadwals.forEach(j => {
+                                const option = document.createElement('option');
+                                option.value = j.id;
+                                option.textContent = j.jam;
+                                jadwalSelect.appendChild(option);
+                            });
+                        } else {
+                            const option = document.createElement('option');
+                            option.value = "";
+                            option.textContent = "Tidak ada jadwal tersedia untuk hari tersebut";
+                            jadwalSelect.appendChild(option);
+                        }
+                    })
+                    .catch(error => console.error('Error fetching jadwal:', error));
+            }
+        }
+
+        // Jalankan fungsi setiap kali ada perubahan pada input tanggal atau konselor
+        tanggalInput.addEventListener('change', updateJadwalOptions);
+        konselorSelect.addEventListener('change', updateJadwalOptions);
+    });
+</script>
+
 {% endblock %}
