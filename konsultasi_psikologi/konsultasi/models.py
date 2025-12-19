@@ -81,5 +81,12 @@ class Pembayaran(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
+# New fields for proof of payment
+    bukti_pembayaran = models.FileField(
+        upload_to='bukti_pembayaran/%Y/%m/%d/', 
+        null=True, 
+        blank=True
+    )    
+
     def __str__(self):
         return f"Pembayaran {self.pasien.nama} - {self.status}"
